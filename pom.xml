@@ -11,7 +11,6 @@
   <url>http://maven.apache.org</url>
   <modules>
     <module>async-log-client</module>
-    <module>async-log-user</module>
   </modules>
 
   <properties>
@@ -24,11 +23,6 @@
 
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>org.example</groupId>
-        <artifactId>async-log-client</artifactId>
-        <version>${project.version}</version>
-      </dependency>
       <dependency>
         <groupId>com.google.auto.service</groupId>
         <artifactId>auto-service</artifactId>

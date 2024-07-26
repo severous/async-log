@@ -84,16 +84,6 @@ public class AsyncLogProcessor extends AbstractProcessor {
             if (!(tree instanceof JCTree.JCClassDecl)) {
                 continue;
             }
-
-            tree.accept(new TreeTranslator(){
-
-                @Override
-                public void visitMethodDef(JCTree.JCMethodDecl tree) {
-                    super.visitMethodDef(tree);
-                }
-            });
-
-
         }
 
         return false;
