@@ -1,6 +1,7 @@
 package org.example.async.log.client.annotation;
 
 
+import com.google.auto.service.AutoService;
 import com.sun.tools.javac.api.JavacTrees;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.tree.JCTree;
@@ -21,6 +22,7 @@ import java.util.Set;
 
 @SupportedSourceVersion(SourceVersion.RELEASE_21)
 @SupportedAnnotationTypes({"*"})
+@AutoService(Processor.class)
 public class AsyncLogProcessor extends AbstractProcessor {
     /**
      * A {@code Messager} provides the way for an annotation processor to
