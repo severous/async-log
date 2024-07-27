@@ -15,7 +15,6 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <google.auto.service.version>1.0</google.auto.service.version>
     <lombok.version>1.18.30</lombok.version>
     <slf4j.version>2.0.4</slf4j.version>
     <logback.version>1.4.14</logback.version>
@@ -23,12 +22,6 @@
 
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>com.google.auto.service</groupId>
-        <artifactId>auto-service</artifactId>
-        <version>${google.auto.service.version}</version>
-      </dependency>
-
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
