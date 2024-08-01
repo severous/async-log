@@ -2,6 +2,7 @@ package org.example.async.log.client.permit;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class Permit {
@@ -88,6 +89,37 @@ public class Permit {
             return UNSAFE.objectFieldOffset(Fake.class.getDeclaredField("override"));
         } catch (Throwable t) {
             throw saved;
+        }
+    }
+
+
+    public static Object invoke(Method m, Object receiver, Object... args) throws IllegalAccessException, InvocationTargetException {
+        return invoke(null, m, receiver, args);
+    }
+
+    public static Object invoke(Throwable initError, Method m, Object receiver, Object... args) throws IllegalAccessException, InvocationTargetException {
+        try {
+            return m.invoke(receiver, args);
+        } catch (IllegalAccessException e) {
+            handleReflectionDebug(e, initError);
+            throw e;
+        } catch (RuntimeException e) {
+            handleReflectionDebug(e, initError);
+            throw e;
+        } catch (Error e) {
+            handleReflectionDebug(e, initError);
+            throw e;
+        }
+    }
+
+    public static void handleReflectionDebug(Throwable t, Throwable initError) {
+//        if (!isDebugReflection()) return;
+
+        System.err.println("** REFLECTION exception: " + t.getClass() + ": " + (t.getMessage() == null ? "(no message)" : t.getMessage()));
+        t.printStackTrace(System.err);
+        if (initError != null) {
+            System.err.println("*** ADDITIONALLY, exception occurred setting up reflection: ");
+            initError.printStackTrace(System.err);
         }
     }
 
