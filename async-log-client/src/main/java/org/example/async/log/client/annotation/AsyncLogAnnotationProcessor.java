@@ -2,11 +2,13 @@ package org.example.async.log.client.annotation;
 
 import com.sun.tools.javac.api.JavacTrees;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
+import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.TreeMaker;
 import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.Names;
 import org.example.async.log.client.patcher.ClassRootFinder;
 import org.example.async.log.client.permit.Permit;
+import org.example.async.log.client.visitor.MethodVisitor;
 
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
@@ -75,12 +77,12 @@ public class AsyncLogAnnotationProcessor extends AbstractProcessor {
             return true;
         }
         for (Element rootElement : rootElements) {
-;
+            JCTree tree = (JCTree) javacTrees.getTree(rootElement);
+            tree.accept(new MethodVisitor(treeMaker, names));
         }
 
         return true;
     }
-
 
 
     void findAndPatchClassLoader(ProcessingEnvironment procEnv) throws Exception{
