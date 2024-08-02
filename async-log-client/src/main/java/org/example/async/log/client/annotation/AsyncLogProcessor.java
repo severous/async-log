@@ -1,87 +1,35 @@
 package org.example.async.log.client.annotation;
 
 
-import com.sun.tools.javac.api.JavacTrees;
-import com.sun.tools.javac.processing.JavacProcessingEnvironment;
-import com.sun.tools.javac.tree.JCTree;
-import com.sun.tools.javac.tree.TreeMaker;
-import com.sun.tools.javac.util.Context;
-import com.sun.tools.javac.util.Names;
 import org.example.async.log.client.permit.Permit;
 import org.example.async.log.client.permit.dummy.Parent;
 import sun.misc.Unsafe;
 
-import javax.annotation.processing.*;
-import javax.lang.model.element.Element;
+import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.element.TypeElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.HashSet;
 import java.util.Set;
 
 
 @SupportedAnnotationTypes({"*"})
 public class AsyncLogProcessor extends AbstractProcessor {
-    /**
-     * A {@code Messager} provides the way for an annotation processor to
-     * report error messages, warnings, and other notices.
-     */
-    private Messager messager;
-
-    /**
-     * It offers a way to interact with the abstract syntax tree (AST)
-     * that the Java compiler (javac) creates during the compilation process
-     */
-    private JavacTrees javacTrees;
-
-    /**
-     * It is used in conjunction with the JavacTrees class to
-     * modify Java source code during the compilation process.
-     */
-    private TreeMaker treeMaker;
-    /**
-     * This class helps in creating and handling unique names for identifiers in the abstract syntax tree (AST).
-     */
-    private Names names;
-
-    private Filer file;
 
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
         addOpensForAsyncLog();
-
-
-        this.messager = processingEnv.getMessager();
-        this.javacTrees = JavacTrees.instance(processingEnv);
-        this.file = processingEnv.getFiler();
-        Context context = ((JavacProcessingEnvironment) processingEnv).getContext();
-        this.treeMaker = TreeMaker.instance(context);
-        this.names = Names.instance(context);
     }
-
 
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        Set<? extends Element> rootElements = roundEnv.getRootElements();
-        if(rootElements.isEmpty()){
-            return true;
-        }
-
-        Set<String> pkgNameSet = new HashSet<>();
-        for (Element rootElement : rootElements) {
-            JCTree tree = javacTrees.getTree(rootElement);
-            if (!(tree instanceof JCTree.JCClassDecl)) {
-                continue;
-            }
-            pkgNameSet.add(javacTrees.getPath(rootElement).getCompilationUnit().getPackageName().toString());
-
-        }
         return true;
     }
-
 
     public static void addOpensForAsyncLog() {
         Class<?> cModule;
@@ -105,6 +53,7 @@ public class AsyncLogProcessor extends AbstractProcessor {
                 "com.sun.tools.javac.tree",
                 "com.sun.tools.javac.util",
                 "com.sun.tools.javac.jvm",
+                "com.sun.tools.javac.api"
         };
 
         try {

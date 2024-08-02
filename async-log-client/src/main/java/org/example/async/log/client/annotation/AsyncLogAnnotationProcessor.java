@@ -9,6 +9,8 @@ import org.example.async.log.client.patcher.ClassRootFinder;
 import org.example.async.log.client.permit.Permit;
 
 import javax.annotation.processing.*;
+import javax.lang.model.SourceVersion;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import java.io.File;
 import java.lang.reflect.Method;
@@ -16,10 +18,35 @@ import java.net.URL;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@SupportedSourceVersion(SourceVersion.RELEASE_21)
 @SupportedAnnotationTypes({"*"})
 public class AsyncLogAnnotationProcessor extends AbstractProcessor {
 
+    /**
+     * A {@code Messager} provides the way for an annotation processor to
+     * report error messages, warnings, and other notices.
+     */
+    private Messager messager;
+
+    /**
+     * It offers a way to interact with the abstract syntax tree (AST)
+     * that the Java compiler (javac) creates during the compilation process
+     */
+    private JavacTrees javacTrees;
+
+    /**
+     * It is used in conjunction with the JavacTrees class to
+     * modify Java source code during the compilation process.
+     */
+    private TreeMaker treeMaker;
+    /**
+     * This class helps in creating and handling unique names for identifiers in the abstract syntax tree (AST).
+     */
+    private Names names;
+
+
     private AtomicBoolean ClassLoader_asyncLogAlreadyAddedTo = new AtomicBoolean(false);
+
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
@@ -27,8 +54,15 @@ public class AsyncLogAnnotationProcessor extends AbstractProcessor {
         try {
             findAndPatchClassLoader(processingEnv);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            ;
         }
+
+        this.messager = processingEnv.getMessager();
+        this.javacTrees = JavacTrees.instance(processingEnv);
+
+        Context context = ((JavacProcessingEnvironment) processingEnv).getContext();
+        this.treeMaker = TreeMaker.instance(context);
+        this.names = Names.instance(context);
 
     }
 
@@ -36,8 +70,17 @@ public class AsyncLogAnnotationProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        return false;
+        Set<? extends Element> rootElements = roundEnv.getRootElements();
+        if(rootElements.isEmpty()){
+            return true;
+        }
+        for (Element rootElement : rootElements) {
+;
+        }
+
+        return true;
     }
+
 
 
     void findAndPatchClassLoader(ProcessingEnvironment procEnv) throws Exception{
@@ -55,17 +98,11 @@ public class AsyncLogAnnotationProcessor extends AbstractProcessor {
 
         Processor processor;
         try {
-            processor = (Processor) Class.forName("lombok.javac.apt.LombokProcessor", false, ourClassLoader).getConstructor().newInstance();
+            processor = (Processor) Class.forName("org.example.async.log.client.annotation.AsyncLogProcessor", false, ourClassLoader).getConstructor().newInstance();
+            processor.init(procEnv);
         } catch (Exception e) {
             ;
-        } catch (NoClassDefFoundError e) {
-            ;
         }
-
-
     }
-
-
-
 
 }
